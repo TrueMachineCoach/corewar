@@ -7,9 +7,9 @@
 			"command": "/usr/bin/gcc",
 			"args": [
 				"-g",
-				"${file}",
+				"${workspaceFolder}/test.c",
 				"-o",
-				"${fileDirname}/${fileBasenameNoExtension}"
+				"${workspaceFolder}/test",
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
@@ -17,10 +17,7 @@
 			"problemMatcher": [
 				"$gcc"
 			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			}
-		}
+			"group": "build"
+		},
 	]
 }

@@ -1,29 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   corewar.h                                          :+:      :+:    :+:   */
+/*   op.h                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 19:13:16 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/06/27 19:47:52 by gtapioca         ###   ########.fr       */
+/*   Created: 2020/06/27 19:44:14 by gtapioca          #+#    #+#             */
+/*   Updated: 2020/06/27 19:45:52 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-
-typedef struct  s_player
-{
-	int					ident;
-	char				*name;
-	char				*comment;
-	unsigned int		code_size;
-	unsigned char		*code;
-	// size_t				current_lives_num;
-	// size_t				previous_lives_num;
-	size_t				last_live;
-	struct s_player		*next;
-	
-}		t_player;
-
-
+# define MEM_SIZE			(4 * 1024)
+# define IDX_MOD			(MEM_SIZE / 8)
+# define CHAMP_MAX_SIZE		(MEM_SIZE / 6)
