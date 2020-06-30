@@ -6,7 +6,7 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 15:53:54 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/06/30 14:36:47 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/06/30 18:57:23 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 // #include "get_next_line/get_next_line.h"
 #include "op.h"
 
-void read_code(int fd, char *str, t_player *player)
+void read_code(int fd, char *str, t_player *player, int count)
 {
 	str = str + 2192;
 	int i;
@@ -28,19 +28,14 @@ void read_code(int fd, char *str, t_player *player)
 
 	i = 0;
 	j = 0;
-	player->code = (unsigned char *)malloc(sizeof(2000));
-	printf("code size = %d\n", player->code_size);
-	while (i < player->code_size)
+	player->code = (unsigned char *)malloc(count);
+	printf("code size = %x\n", player->player_header.prog_size);
+	while (i < player->player_header.prog_size)
 	{
 		player->code[i] = str[i];
 		i++;
 	}
-	if (i == player->code_size && (read(fd, str, 1) > 0))
-	{
-		printf("ERROR: length of code don't accord to code size");
-		exit(1);
-	}
-	while (j < player->code_size)
+	while (j < player->player_header.prog_size)
 	{
 		if ((player->code[j]) >= 16)
 			printf("%x ", (player->code[j]));
@@ -60,13 +55,12 @@ void read_comment(char *str, t_player *player)
 	int i;
 
 	i = 0;
-	player->comment = (char *)malloc(2048);
-	while (i < 2048)
+	while (i < COMMENT_LENGTH)
 	{
-		player->comment[i] = str[i + 140];
+		player->player_header.comment[i] = str[i + 12 + PROG_NAME_LENGTH];
 		i++;
 	}
-	printf("comment - %s\n", player->comment);
+	printf("comment - %s\n", player->player_header.comment);
 }
 
 int check_nulls_and_code_size(int count, char *str, t_player *player, char **argv)
@@ -81,7 +75,6 @@ int check_nulls_and_code_size(int count, char *str, t_player *player, char **arg
 		| str[6 + PROG_NAME_LENGTH] != 0 | str[7 + PROG_NAME_LENGTH] != 0
 			| str[12 + PROG_NAME_LENGTH + COMMENT_LENGTH] != 0 | str[13 + PROG_NAME_LENGTH + COMMENT_LENGTH] != 0
 		  		| str[14 + PROG_NAME_LENGTH + COMMENT_LENGTH] != 0 | str[15 + PROG_NAME_LENGTH + COMMENT_LENGTH] != 0)
-		  
 	{
 		printf("Error : mistake in the separating nulls\n");
 		exit(1);
@@ -107,7 +100,8 @@ int check_nulls_and_code_size(int count, char *str, t_player *player, char **arg
 	}
 	else
 	{
-		player->code_size = (*((unsigned int *)(code_size_point)));
+		// player->code_size = (*((unsigned int *)(code_size_point)));
+		player->player_header.prog_size = (*((unsigned int *)(code_size_point)));
 		// free(code_size_point);
 		return (0);
 	}
@@ -116,6 +110,7 @@ int check_nulls_and_code_size(int count, char *str, t_player *player, char **arg
 void set_player_name(char *str, t_player *player)
 {
 	int i;
+	int buff;
 
 	i = 0;
 	printf("name - ");
@@ -125,24 +120,31 @@ void set_player_name(char *str, t_player *player)
 		i++;
 	}
 	printf("\n");
-	player->name = (char *)malloc(i + 1);
-	player->name[i] = '\0';
+	buff = i;
 	i = 0;
-	while (i < (ft_strlen(player->name)))
+	while (i < buff)
 	{
-		player->name[i] = str[i + 4];
+		player->player_header.prog_name[i] = str[i + 4];
 		i++;
 	}
+	player->player_header.prog_name[i] = '\0';
 }
 
-void check_magic_header(char *str, char **argv)
+void check_magic_header(char *str, char **argv, t_player *player)
 {
+	char helper[4];
+
 	if ((unsigned char)str[0] != 0x00 | (unsigned char)str[1] != 0xea
 		| (unsigned char)str[2] != 0x83 | (unsigned char)str[3] != 0xf3)
 	{
 		printf("Error: File %s has an invalid header\n", *argv);
 		exit(1);
 	}
+	helper[0] = str[3];
+	helper[1] = str[2];
+	helper[2] = str[1];
+	helper[3] = str[0];	
+	player->player_header.magic = *((unsigned int *)helper);
 }
 
 void players_reader_parse_champions(int fd, t_player *player, char **argv)
@@ -157,25 +159,62 @@ void players_reader_parse_champions(int fd, t_player *player, char **argv)
 	count = count - PROG_NAME_LENGTH - COMMENT_LENGTH - 16;
 	lseek(fd, 0, SEEK_SET);
 	read(fd, str, BUFFER_SIZE);
-	check_magic_header(str, argv);
+	check_magic_header(str, argv, player);
 	set_player_name(str, player);
 	if (check_nulls_and_code_size(count, str, player, argv) == 0)
 	{
 		read_comment(str, player);
-		read_code(fd, str, player);
+		read_code(fd, str, player, count);
 	}
 }
 
+// char *champion_order_creator()
+// {
+	
+// }
+
+// void position_mass_initializer()
+// {
+	
+// }
+
+// char *flag_checker(char **argv, int argc)
+// {
+// 	int position_mass[8];
+// 	char **brgv;
+
+// 	position_mass_initializer(&position_mass);
+// 	brgv = argv;
+// 	while (*brgv)
+// 	{
+// 		if (*brgv == '-')
+// 		{
+// 			brgv++;
+// 			if (*brgv == 'n')
+// 				return(champion_order_creator());
+// 			if (!ft_strlen(*argv, '-dump'))
+// 			{
+				
+// 			}
+			
+// 		}
+// 		brgv++;
+// 	}
+// }
+
 int main(int argc, char **argv)
 {
+	t_game_process *game_process;
 	t_player *player_mass;
 	int fd;
 	int i;
+	char *ppp;
 
 	argv++;
 	i = 1;
+	game_process = (t_game_process *)malloc(sizeof(t_game_process));
 	player_mass = (t_player *)malloc(sizeof(t_player)*(argc - 1));
-	if (argc > 5)
+	if (argc > MAX_ARGS_NUMBER + 1)
 	{
 		printf("Too many champions\n");
 		exit(1);
@@ -183,6 +222,11 @@ int main(int argc, char **argv)
 	while (*argv != 0)
 	{
 		fd = open(*argv, O_RDONLY);
+		if (fd < 0)
+		{
+			printf("Can't read source file %s\n", *argv);
+			exit (1);
+		}
 		players_reader_parse_champions(fd, &(player_mass[i - 1]), argv);
 		player_mass[i - 1].ident = i;
 		printf("identifier - %d\n\n", i);
@@ -190,4 +234,5 @@ int main(int argc, char **argv)
 		argv++;
 		i++;
 	}
+	printf("%x\n", player_mass[0].player_header.prog_size);
 }
