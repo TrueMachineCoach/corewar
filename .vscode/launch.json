@@ -9,7 +9,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/test",
-			"args": ["../Downloads/vm_champs/champs/42.cor", "../Downloads/vm_champs/champs/ex.cor"],
+			"args": ["${workspaceFolder}/ex1_1.cor"],
 			"stopAtEntry": true,
 			"cwd": "${workspaceFolder}",
 			"environment": [],

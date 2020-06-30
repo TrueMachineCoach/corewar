@@ -6,7 +6,7 @@
 #    By: vbrazhni <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/07/05 13:39:23 by vbrazhni          #+#    #+#              #
-#    Updated: 2018/08/06 13:57:14 by vbrazhni         ###   ########.fr        #
+#    Updated: 2018/08/22 16:48:32 by vbrazhni         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -14,11 +14,14 @@ NAME = libft.a
 CC = gcc
 FLAGS = -Wall -Werror -Wextra -O3 -c
 INCLUDES = -I$(HEADERS_DIRECTORY)
-HEADERS_LIST = libft.h
-HEADERS_DIRECTORY = ./
+HEADERS_LIST = \
+	libft.h\
+	get_next_line.h
+HEADERS_DIRECTORY = ./includes/
 HEADERS = $(addprefix $(HEADERS_DIRECTORY), $(HEADERS_LIST))
-SOURCES_DIRECTORY = ./
-SOURCES_LIST = ft_memset.c\
+SOURCES_DIRECTORY = ./sources/
+SOURCES_LIST = \
+	ft_memset.c\
 	ft_bzero.c\
 	ft_memcpy.c\
 	ft_memccpy.c\
@@ -87,7 +90,21 @@ SOURCES_LIST = ft_memset.c\
 	ft_strupr.c\
 	ft_strrev.c\
 	ft_strchrs.c\
-	ft_strsubchr.c
+	ft_strsubchr.c\
+	get_next_line.c\
+	ft_percent.c\
+	ft_arrindex.c\
+	ft_isdigit_base.c\
+	ft_isprefix.c\
+	ft_isnum.c\
+	ft_signedlen.c\
+	ft_unsignedlen.c\
+	ft_isint.c\
+	ft_strsplit_free.c\
+	ft_strsplit_len.c\
+	ft_wcslen.c\
+	ft_pow_int.c\
+	ft_atoi32.c
 SOURCES = $(addprefix $(SOURCES_DIRECTORY), $(SOURCES_LIST))
 OBJECTS_DIRECTORY = objects/
 OBJECTS_LIST = $(patsubst %.c, %.o, $(SOURCES_LIST))
@@ -99,7 +116,7 @@ GREEN = \033[0;32m
 RED = \033[0;31m
 RESET = \033[0m
 
-MAKEFLAGS += -j4
+# MAKEFLAGS += -j
 
 .PHONY: all clean fclean re
 
