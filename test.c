@@ -6,7 +6,7 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 15:53:54 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/06/30 18:57:23 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/03 15:42:35 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,11 @@
 #include <fcntl.h>
 // #include "get_next_line/get_next_line.h"
 #include "op.h"
+
+void parse_arguments(char **args)
+{
+	
+}
 
 void read_code(int fd, char *str, t_player *player, int count)
 {
@@ -235,4 +240,5 @@ int main(int argc, char **argv)
 		i++;
 	}
 	printf("%x\n", player_mass[0].player_header.prog_size);
+	printf("%x\n", (T_REG | T_DIR | T_IND));
 }
