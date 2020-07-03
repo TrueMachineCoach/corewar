@@ -6,10 +6,11 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 15:53:54 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/07/03 15:42:35 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/03 22:42:58 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+// #include <stdbool.h>
 #include <stdlib.h>
 #include "libft/includes/libft.h"
 #include <unistd.h>
@@ -20,9 +21,90 @@
 // #include "get_next_line/get_next_line.h"
 #include "op.h"
 
-void parse_arguments(char **args)
+int check_atoi_honest(char *argv)
 {
-	
+	while (*argv == '\t' || *argv == '\v' || *argv == '\f' ||
+			*argv == '\r' || *argv == '\n' || *argv == ' ')
+		argv++;
+	if (*argv == '-' || *argv == '+')
+		argv++;
+	while (*argv == '0' && *(argv + 1) == '0')
+		argv++;
+	while (*argv >= '0' && *argv <= '9')
+		argv++;
+	if (*argv != '\0')
+		return (0);
+	return (1);
+}
+
+void put_in_stack_of_players_helper(t_player_list **player_list, t_player *player, int pos)
+{
+	if (*player_list == NULL)
+	{
+		*player_list = (t_player_list *)malloc(sizeof(t_player_list));
+		(*player_list)->player = player;
+		(*player_list)->next = NULL;
+		(*player_list)->prev = NULL;
+	}
+}
+
+void put_in_stack_of_players(int pos, char *player_name, t_player_list *player_list)
+{
+	t_player	*player;
+	int				fd;
+
+	fd = open(player_name, O_RDONLY);
+	if (fd < 0)
+	{
+		printf("Can't read source file %s\n", player_name);
+		exit (1);
+	}
+	player = (t_player *)malloc(sizeof(t_player));
+	players_reader_parse_champions(fd, player, player_name);
+	close(fd);
+	put_in_stack_of_players_helper(&player_list, player, pos);
+}
+
+void parse_arguments(char **argv, t_game_process *gane_process, t_player_list *player_list)
+{
+	int count_dump;
+
+	count_dump = 0;
+	while (*argv != 0)
+	{
+		if (ft_strcmp(*argv, "-dump") == 0)
+		{
+			argv++;
+			if (ft_atoi(*argv) >= 0 &&
+					check_atoi_honest(*argv) == 1 &&
+						count_dump == 0)
+			{
+				gane_process->dump_cycle = ft_atoi(*argv);
+				count_dump++;
+			}
+			else
+			{
+				printf("usage/--\n");
+				exit(1);
+			}
+		}
+		else if (ft_strcmp(*argv, "-n") == 0)
+		{
+			argv++;
+			if (ft_atoi(*argv) >= 0 &&
+					check_atoi_honest(*argv) == 1 &&
+						ft_strcmp(*(argv + 1), "-n") != 0)
+			{
+				argv++;
+				put_in_stack_of_players(ft_atoi(*argv), *argv, player_list);
+			}
+			else
+			{
+				printf("usage/--\n");
+				exit(1);
+			}
+		}
+	}
 }
 
 void read_code(int fd, char *str, t_player *player, int count)
@@ -240,5 +322,7 @@ int main(int argc, char **argv)
 		i++;
 	}
 	printf("%x\n", player_mass[0].player_header.prog_size);
-	printf("%x\n", (T_REG | T_DIR | T_IND));
+	printf("%d\n", (T_REG | T_DIR | T_IND));
+	printf("%d\n", op_tab[5].arg_types[0]);
+	printf("%d", atoi("      -1              -2 "));
 }

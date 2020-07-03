@@ -6,7 +6,7 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 19:13:16 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/07/03 15:36:14 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/03 22:14:26 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,19 +43,19 @@ typedef struct s_player_process
 	u_int64_t	cycles_to_wait;
 }				t_player_process;
 
-typedef struct			s_player
+typedef struct			s_player_list
 {
 	t_player		*player;
 	int				position;
 	t_player		*next;
 	t_player		*prev;
-}						player_list;
+}						t_player_list;
 
 typedef struct s_op
 {
 	char 			*name;
 	int 			args_number;
-	int			 	*arg_types;
+	int			 	arg_types[3];
 	unsigned char 	bytecode_operation;
 	int				cycles_before_complete;
 	char 			*explanation;
