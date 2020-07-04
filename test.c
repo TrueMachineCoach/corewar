@@ -6,7 +6,7 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 15:53:54 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/07/03 22:42:58 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/04 21:07:03 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,91 +21,6 @@
 // #include "get_next_line/get_next_line.h"
 #include "op.h"
 
-int check_atoi_honest(char *argv)
-{
-	while (*argv == '\t' || *argv == '\v' || *argv == '\f' ||
-			*argv == '\r' || *argv == '\n' || *argv == ' ')
-		argv++;
-	if (*argv == '-' || *argv == '+')
-		argv++;
-	while (*argv == '0' && *(argv + 1) == '0')
-		argv++;
-	while (*argv >= '0' && *argv <= '9')
-		argv++;
-	if (*argv != '\0')
-		return (0);
-	return (1);
-}
-
-void put_in_stack_of_players_helper(t_player_list **player_list, t_player *player, int pos)
-{
-	if (*player_list == NULL)
-	{
-		*player_list = (t_player_list *)malloc(sizeof(t_player_list));
-		(*player_list)->player = player;
-		(*player_list)->next = NULL;
-		(*player_list)->prev = NULL;
-	}
-}
-
-void put_in_stack_of_players(int pos, char *player_name, t_player_list *player_list)
-{
-	t_player	*player;
-	int				fd;
-
-	fd = open(player_name, O_RDONLY);
-	if (fd < 0)
-	{
-		printf("Can't read source file %s\n", player_name);
-		exit (1);
-	}
-	player = (t_player *)malloc(sizeof(t_player));
-	players_reader_parse_champions(fd, player, player_name);
-	close(fd);
-	put_in_stack_of_players_helper(&player_list, player, pos);
-}
-
-void parse_arguments(char **argv, t_game_process *gane_process, t_player_list *player_list)
-{
-	int count_dump;
-
-	count_dump = 0;
-	while (*argv != 0)
-	{
-		if (ft_strcmp(*argv, "-dump") == 0)
-		{
-			argv++;
-			if (ft_atoi(*argv) >= 0 &&
-					check_atoi_honest(*argv) == 1 &&
-						count_dump == 0)
-			{
-				gane_process->dump_cycle = ft_atoi(*argv);
-				count_dump++;
-			}
-			else
-			{
-				printf("usage/--\n");
-				exit(1);
-			}
-		}
-		else if (ft_strcmp(*argv, "-n") == 0)
-		{
-			argv++;
-			if (ft_atoi(*argv) >= 0 &&
-					check_atoi_honest(*argv) == 1 &&
-						ft_strcmp(*(argv + 1), "-n") != 0)
-			{
-				argv++;
-				put_in_stack_of_players(ft_atoi(*argv), *argv, player_list);
-			}
-			else
-			{
-				printf("usage/--\n");
-				exit(1);
-			}
-		}
-	}
-}
 
 void read_code(int fd, char *str, t_player *player, int count)
 {
@@ -255,6 +170,274 @@ void players_reader_parse_champions(int fd, t_player *player, char **argv)
 	}
 }
 
+
+
+void put_in_stack_of_players_helper(t_player_list **player_list, t_player *player, int pos)
+{
+	t_player_list	*buff1;
+	t_player_list	*buff2;
+	t_player_list	*player_list_loc;
+	int				count;
+
+	count = 0;
+	player_list_loc = *player_list;
+	if (player_list_loc == NULL)
+	{
+		*player_list = (t_player_list *)malloc(sizeof(t_player_list));
+		(*player_list)->player = player;
+		(*player_list)->next = NULL;
+		(*player_list)->prev = NULL;
+		if (pos > 0)
+			(*player_list)->position = pos;
+		else
+			(*player_list)->position = 0;
+		return ;
+	}
+	if (pos > 0)
+	{
+		while((player_list_loc)->next != 0 && pos > (player_list_loc)->position)
+		{
+			(player_list_loc) = (player_list_loc)->next;
+			count++;
+		}
+		count++;
+		if ((player_list_loc)->position == pos)
+		{
+			printf("usage/--\n");
+			exit(1);
+		}
+		if ((player_list_loc)->next != 0 && (player_list_loc)->prev != 0)
+		{
+			buff1 = (player_list_loc);
+			buff2 = (player_list_loc)->prev;
+			player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+			(player_list_loc)->prev = buff2;
+			(player_list_loc)->next = buff1;
+			(player_list_loc)->player = player;
+			(player_list_loc)->position = pos;
+			buff1->prev = (player_list_loc);
+			buff2->next = (player_list_loc);
+			return ;
+		}
+		if ((player_list_loc)->next != 0 && (player_list_loc)->prev == 0)
+		{
+			buff1 = (player_list_loc);
+			player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+			(player_list_loc)->prev = NULL;
+			(player_list_loc)->next = buff1;
+			(player_list_loc)->player = player;
+			(player_list_loc)->position = pos;
+			buff1->prev = (player_list_loc);
+			(*player_list) = player_list_loc;
+			return ;
+		}
+		if ((player_list_loc)->next == 0 && (player_list_loc)->prev != 0)
+		{
+			buff2 = (player_list_loc);
+			player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+			(player_list_loc)->prev = buff2;
+			(player_list_loc)->next = NULL;
+			(player_list_loc)->player = player;
+			(player_list_loc)->position = pos;
+			buff2->next = (player_list_loc);
+			return ;
+		}
+		if ((player_list_loc)->next == 0 && (player_list_loc)->prev == 0)
+		{
+			if (player_list_loc->position > pos)
+			{
+				buff2 = (player_list_loc);
+				player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+				(player_list_loc)->prev = NULL;
+				(player_list_loc)->next =  buff2;
+				(player_list_loc)->player = player;
+				(player_list_loc)->position = pos;
+				buff2->prev = (player_list_loc);
+				*player_list = player_list_loc;
+				return ;
+			}
+			else
+			{
+				buff2 = (player_list_loc);
+				player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+				(player_list_loc)->prev = buff2;
+				(player_list_loc)->next =  NULL;
+				(player_list_loc)->player = player;
+				(player_list_loc)->position = pos;
+				buff2->next = (player_list_loc);
+				return ;
+			}
+		}
+	}
+	else
+	{
+		while((player_list_loc)->next != 0)
+		{
+			count++;
+			if ((player_list_loc)->position > count)
+				break ;
+			(player_list_loc) = (player_list_loc)->next;
+		}
+		count++;
+		if ((player_list_loc)->next != 0 && (player_list_loc)->prev != 0)
+		{
+			buff1 = (player_list_loc);
+			buff2 = (player_list_loc)->prev;
+			player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+			(player_list_loc)->prev = buff2;
+			(player_list_loc)->next = buff1;
+			(player_list_loc)->player = player;
+			(player_list_loc)->position = 0;
+			buff1->prev = (player_list_loc);
+			buff2->next = (player_list_loc);
+			return ;
+		}
+		if ((player_list_loc)->next != 0 && (player_list_loc)->prev == 0)
+		{
+			buff1 = (player_list_loc);
+			player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+			(player_list_loc)->prev = NULL;
+			(player_list_loc)->next = buff1;
+			(player_list_loc)->player = player;
+			(player_list_loc)->position = 0;
+			buff1->prev = (player_list_loc);
+			(*player_list) = player_list_loc;
+			return ;
+		}
+		if ((player_list_loc)->next == 0 && (player_list_loc)->prev != 0)
+		{
+			if (player_list_loc->position > count)
+			{
+				buff1 = (player_list_loc);
+				buff2 = (player_list_loc)->prev;
+				player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+				(player_list_loc)->prev = buff2;
+				(player_list_loc)->next = buff1;
+				(player_list_loc)->player = player;
+				(player_list_loc)->position = 0;
+				buff1->prev = (player_list_loc);
+				buff2->next = (player_list_loc);
+				return ;
+			}
+			else
+			{
+				buff2 = (player_list_loc);
+				player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+				(player_list_loc)->prev = buff2;
+				(player_list_loc)->next = NULL;
+				(player_list_loc)->player = player;
+				(player_list_loc)->position = 0;
+				buff2->next = (player_list_loc);
+			}
+			return;
+		}
+		if ((player_list_loc)->next == 0 && (player_list_loc)->prev == 0)
+		{
+			if (player_list_loc->position >= 2)
+			{
+				buff2 = (player_list_loc);
+				player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+				(player_list_loc)->prev = NULL;
+				(player_list_loc)->next =  buff2;
+				(player_list_loc)->player = player;
+				(player_list_loc)->position = 0;
+				buff2->prev = (player_list_loc);
+				*player_list = player_list_loc;
+				return ;
+			}
+			else
+			{
+				buff2 = (player_list_loc);
+				player_list_loc = (t_player_list *)malloc(sizeof(t_player_list));
+				(player_list_loc)->prev = buff2;
+				(player_list_loc)->next =  NULL;
+				(player_list_loc)->player = player;
+				(player_list_loc)->position = 0;
+				buff2->next = (player_list_loc);
+				return ;
+			}
+		}
+	}
+}
+
+void put_in_stack_of_players(int pos, char *player_name, t_player_list **player_list)
+{
+	t_player	*player;
+	int				fd;
+
+	fd = open(player_name, O_RDONLY);
+	if (fd < 0)
+	{
+		printf("Can't read source file %s\n", player_name);
+		exit (1);
+	}
+	player = (t_player *)malloc(sizeof(t_player));
+	players_reader_parse_champions(fd, player, &player_name);
+	close(fd);
+	put_in_stack_of_players_helper(player_list, player, pos);
+}
+
+int check_atoi_honest(char *argv)
+{
+	while (*argv == '\t' || *argv == '\v' || *argv == '\f' ||
+			*argv == '\r' || *argv == '\n' || *argv == ' ')
+		argv++;
+	if (*argv == '-' || *argv == '+')
+		argv++;
+	while (*argv == '0' && *(argv + 1) == '0')
+		argv++;
+	while (*argv >= '0' && *argv <= '9')
+		argv++;
+	if (*argv != '\0')
+		return (0);
+	return (1);
+}
+
+void parse_arguments(char **argv, t_game_process *game_process, t_player_list **player_list)
+{
+	int count_dump;
+
+	count_dump = 0;
+	while (*argv != 0)
+	{
+		if (ft_strcmp(*argv, "-dump") == 0)
+		{
+			argv++;
+			if (ft_atoi(*argv) >= 0 &&
+					check_atoi_honest(*argv) == 1 &&
+						count_dump == 0)
+			{
+				game_process->dump_cycle = ft_atoi(*argv);
+				count_dump++;
+			}
+			else
+			{
+				printf("usage/--\n");
+				exit(1);
+			}
+		}
+		else if (ft_strcmp(*argv, "-n") == 0)
+		{
+			argv++;
+			if (ft_atoi(*argv) > 0 && ft_atoi(*argv) <= 4 &&
+					check_atoi_honest(*argv) == 1 &&
+						ft_strcmp(*(argv + 1), "-n") != 0)
+			{
+				argv++;
+				put_in_stack_of_players(ft_atoi(*(argv - 1)), *argv, player_list);
+			}
+			else
+			{
+				printf("usage/--\n");
+				exit(1);
+			}
+		}
+		else
+			put_in_stack_of_players(ft_atoi(*argv), *argv, player_list);
+		argv++;
+	}
+}
+
 // char *champion_order_creator()
 // {
 	
@@ -289,40 +472,132 @@ void players_reader_parse_champions(int fd, t_player *player, char **argv)
 // 	}
 // }
 
+size_t	ft_count_words(char const *s, char c)
+{
+	size_t words;
+
+	words = 0;
+	while (*s)
+	{
+		while (*s == c)
+			s++;
+		if (*s)
+		{
+			words++;
+			while (*s && *s != c)
+				s++;
+		}
+	}
+	return (words);
+}
+
+void free_memory_after_strsplit(char **argv)
+{
+	char **beginner;
+
+	beginner = argv;
+	while (*argv != 0)
+	{
+		free(*argv);
+		argv++;
+	}
+	free(*argv);
+	free(beginner);
+}
+
+void memory_allocator_helper(char *str, char **buff)
+{
+	char **buff_2;
+	int i;
+	int j;
+
+	j = 0;
+	while(*buff != 0)
+		buff++;
+	buff_2 = ft_strsplit(str, ' ');
+	while (buff_2[j] != 0)
+	{
+		i = 0;
+		*buff = (char *)malloc(sizeof(char)*(ft_strlen(buff_2[j]) + 1));
+		while (buff_2[j][i] != 0)
+		{
+			(*buff)[i] = buff_2[j][i];
+			i++;		
+		}
+		(*buff)[i] = 0;
+		j++;
+		buff++;
+	}
+	free_memory_after_strsplit(buff_2);
+}
+
+char **memory_allocator(char **argv)
+{
+	int counter;
+	int i;
+	char **buff;
+
+	i = 0;
+	counter = 0;
+	while (argv[i] != 0)
+	{
+		counter += ft_count_words(argv[i], ' ');
+		i++;
+	}
+	// printf("%d\n", counter);
+	buff = (char **)malloc(sizeof(char *)*(counter + 1));
+	i = 0;
+	while (i < counter)
+	{
+		buff[i] = 0;
+		i++;
+	}
+	buff[counter] = 0;
+	i = 0;
+	while(argv[i] != 0)
+	{
+		memory_allocator_helper(argv[i], buff);
+		i++;
+	}
+	// i = 0;
+	// while (buff[i] != 0)
+	// {
+	// 	printf("%s\n", buff[i]);
+	// 	i++;
+	// }
+	// buff[i] = 0;
+	return (buff);
+}
+
 int main(int argc, char **argv)
 {
 	t_game_process *game_process;
-	t_player *player_mass;
+	t_player		*player_mass;
+	t_player_list	*player_list;
 	int fd;
 	int i;
-	char *ppp;
+	int j;
+	int c;
+	char **ppp;
+	char **ppp1;
 
 	argv++;
-	i = 1;
+	ppp = memory_allocator(argv);
+	i = 0;
+	j = 0;
+	player_list = NULL;
 	game_process = (t_game_process *)malloc(sizeof(t_game_process));
-	player_mass = (t_player *)malloc(sizeof(t_player)*(argc - 1));
-	if (argc > MAX_ARGS_NUMBER + 1)
+	// printf("control_point\n");
+	parse_arguments(ppp, game_process, &player_list);
+	printf("\n\n\n\n\n\n\n\n");
+	while(player_list != 0)
 	{
-		printf("Too many champions\n");
-		exit(1);
+		printf("%s\n", player_list->player->player_header.prog_name);
+		player_list = player_list->next;
 	}
-	while (*argv != 0)
-	{
-		fd = open(*argv, O_RDONLY);
-		if (fd < 0)
-		{
-			printf("Can't read source file %s\n", *argv);
-			exit (1);
-		}
-		players_reader_parse_champions(fd, &(player_mass[i - 1]), argv);
-		player_mass[i - 1].ident = i;
-		printf("identifier - %d\n\n", i);
-		close(fd);
-		argv++;
-		i++;
-	}
-	printf("%x\n", player_mass[0].player_header.prog_size);
-	printf("%d\n", (T_REG | T_DIR | T_IND));
-	printf("%d\n", op_tab[5].arg_types[0]);
-	printf("%d", atoi("      -1              -2 "));
+	// while (*ppp)
+	// {
+	// 	printf("%s\n", *ppp);
+	// 	ppp++;
+	// }
 }

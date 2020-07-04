@@ -9,7 +9,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/test",
-			"args": [""""""],
+			"args": ["-n", "1", "ex.cor", "-n", "3", "Gagnant.cor", "sebc.cor"],
 			"stopAtEntry": true,
 			"cwd": "${workspaceFolder}",
 			"environment": [],

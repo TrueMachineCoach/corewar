@@ -6,7 +6,7 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 19:13:16 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/07/03 22:14:26 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/04 20:37:29 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,11 @@ typedef struct s_player_process
 
 typedef struct			s_player_list
 {
-	t_player		*player;
-	int				position;
-	t_player		*next;
-	t_player		*prev;
+	t_player					*player;
+	int							position;
+	struct s_player_list		*next;
+	struct s_player_list		*prev;
+	int							flag;
 }						t_player_list;
 
 typedef struct s_op

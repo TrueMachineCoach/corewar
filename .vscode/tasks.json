@@ -10,6 +10,7 @@
 				"${workspaceFolder}/test.c",
 				"-o",
 				"${workspaceFolder}/test",
+				"${workspaceFolder}/libft/libft.a",
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
