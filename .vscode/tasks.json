@@ -11,6 +11,8 @@
 				"-o",
 				"${workspaceFolder}/test",
 				"${workspaceFolder}/libft/libft.a",
+				"${workspaceFolder}/virtual_machine.c",
+				"${workspaceFolder}/op.c"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"

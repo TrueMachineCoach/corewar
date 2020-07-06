@@ -6,24 +6,16 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 19:43:05 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/07/05 19:45:43 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/06 19:13:10 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "corewar.h"
+#include <stdlib.h>
 #include "op.h"
+#include <stdio.h>
 
-typedef struct s_op
-{
-	char 			*name;
-	int 			args_number;
-	int			 	arg_types[3];
-	unsigned char 	bytecode_operation;
-	int				cycles_before_complete;
-	char 			*explanation;
-	int 			change_carry;
-	int 			have_a_code_type_code;
-}		t_op;
+int pui = 5;
 
 t_op    op_tab[17] =
 {
@@ -51,3 +43,85 @@ t_op    op_tab[17] =
 	{"aff", 1, {T_REG}, 16, 2, "aff", 1, 0},
 	{0, 0, {0}, 0, 0, 0, 0, 0}
 };
+
+char **memory_allocator(char **argv)
+{
+	int counter;
+	int i;
+	char **buff;
+
+	i = 0;
+	counter = 0;
+	while (argv[i] != 0)
+	{
+		counter += ft_count_words(argv[i], ' ');
+		i++;
+	}
+	// printf("%d\n", counter);
+	buff = (char **)malloc(sizeof(char *)*(counter + 1));
+	i = 0;
+	while (i < counter)
+	{
+		buff[i] = 0;
+		i++;
+	}
+	buff[counter] = 0;
+	i = 0;
+	while(argv[i] != 0)
+	{
+		memory_allocator_helper(argv[i], buff);
+		i++;
+	}
+	// i = 0;
+	// while (buff[i] != 0)
+	// {
+	// 	printf("%s\n", buff[i]);
+	// 	i++;
+	// }
+	// buff[i] = 0;
+	return (buff);
+}
+
+int main(int argc, char **argv)
+{
+	t_game_process *game_process;
+	t_player_list		*player_list_1;
+	t_player_list	*player_list;
+	int fd;
+	int i;
+	int j;
+	int c;
+	char **ppp;
+	char **ppp1;
+
+	argv++;
+	ppp = memory_allocator(argv);
+	i = 0;
+	j = 0;
+	player_list = NULL;
+	game_process = (t_game_process *)malloc(sizeof(t_game_process));
+	// printf("control_point\n");
+	parse_arguments(ppp, game_process, &player_list);
+	player_list_1 = player_list;
+	// printf("\n\n\n\n\n\n\n\n");
+	printf("Introducing contestants...\n");
+	while(player_list_1 != 0)
+	{
+		printf("* Player %d, weighing %d bytes, \"%s\" (\"%s\") !\n",
+			player_list_1->position,
+			player_list_1->player->player_header.prog_size,
+			player_list_1->player->player_header.prog_name,
+			player_list_1->player->player_header.comment);
+		player_list_1 = player_list_1->next;
+	}
+	game_process->cycle_to_die = CYCLE_TO_DIE;
+	game_process->cycle_to_die = 0;
+	virtual_machine_creator(game_process, player_list, op_tab);
+	// printf("%s\n", op_tab[11].name);
+	// printf("%d", pui);
+	// while (*ppp)
+	// {
+	// 	printf("%s\n", *ppp);
+	// 	ppp++;
+	// }
+}

@@ -6,7 +6,7 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 15:53:54 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/07/05 20:03:32 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/06 18:54:33 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,6 +219,11 @@ void put_in_stack_of_players(int pos, char *player_name, t_player_list **player_
 	int				fd;
 
 	fd = open(player_name, O_RDONLY);
+	if (ft_strstr(player_name, ".cor") == NULL)
+	{
+		printf("Wrong file format %s\n", player_name);
+		exit (1);
+	}
 	if (fd < 0)
 	{
 		printf("Can't read source file %s\n", player_name);
@@ -385,6 +390,11 @@ void check_position(t_player_list *player_list_1, t_player_list *player_list_2)
 		// }
 		player_list_2 = player_list_2->next;
 	}
+	if (len == 0)
+	{
+		printf("Usage:\n  -dump : dump memory after nbr cycles\n  -n : specify player's position\n");
+		exit(1);
+	}
 }
 
 void parse_arguments(char **argv, t_game_process *game_process, t_player_list **player_list)
@@ -417,8 +427,8 @@ void parse_arguments(char **argv, t_game_process *game_process, t_player_list **
 		else if (ft_strcmp(*argv, "-n") == 0)
 		{
 			argv++;
-			if (ft_atoi(*argv) > 0 && ft_atoi(*argv) <= 4 &&
-					check_atoi_honest(*argv) == 1 &&
+			if (*argv && ft_atoi(*argv) > 0 && ft_atoi(*argv) <= 4 &&
+					check_atoi_honest(*argv) == 1 && *(argv + 1) &&
 						ft_strcmp(*(argv + 1), "-n") != 0)
 			{
 				argv++;
@@ -542,82 +552,84 @@ void memory_allocator_helper(char *str, char **buff)
 	free_memory_after_strsplit(buff_2);
 }
 
-char **memory_allocator(char **argv)
-{
-	int counter;
-	int i;
-	char **buff;
+// char **memory_allocator(char **argv)
+// {
+// 	int counter;
+// 	int i;
+// 	char **buff;
 
-	i = 0;
-	counter = 0;
-	while (argv[i] != 0)
-	{
-		counter += ft_count_words(argv[i], ' ');
-		i++;
-	}
-	// printf("%d\n", counter);
-	buff = (char **)malloc(sizeof(char *)*(counter + 1));
-	i = 0;
-	while (i < counter)
-	{
-		buff[i] = 0;
-		i++;
-	}
-	buff[counter] = 0;
-	i = 0;
-	while(argv[i] != 0)
-	{
-		memory_allocator_helper(argv[i], buff);
-		i++;
-	}
-	// i = 0;
-	// while (buff[i] != 0)
-	// {
-	// 	printf("%s\n", buff[i]);
-	// 	i++;
-	// }
-	// buff[i] = 0;
-	return (buff);
-}
+// 	i = 0;
+// 	counter = 0;
+// 	while (argv[i] != 0)
+// 	{
+// 		counter += ft_count_words(argv[i], ' ');
+// 		i++;
+// 	}
+// 	// printf("%d\n", counter);
+// 	buff = (char **)malloc(sizeof(char *)*(counter + 1));
+// 	i = 0;
+// 	while (i < counter)
+// 	{
+// 		buff[i] = 0;
+// 		i++;
+// 	}
+// 	buff[counter] = 0;
+// 	i = 0;
+// 	while(argv[i] != 0)
+// 	{
+// 		memory_allocator_helper(argv[i], buff);
+// 		i++;
+// 	}
+// 	// i = 0;
+// 	// while (buff[i] != 0)
+// 	// {
+// 	// 	printf("%s\n", buff[i]);
+// 	// 	i++;
+// 	// }
+// 	// buff[i] = 0;
+// 	return (buff);
+// }
 
-int main(int argc, char **argv)
-{
-	t_game_process *game_process;
-	t_player_list		*player_list_1;
-	t_player_list	*player_list;
-	int fd;
-	int i;
-	int j;
-	int c;
-	char **ppp;
-	char **ppp1;
+// int main(int argc, char **argv)
+// {
+// 	t_game_process *game_process;
+// 	t_player_list		*player_list_1;
+// 	t_player_list	*player_list;
+// 	int fd;
+// 	int i;
+// 	int j;
+// 	int c;
+// 	char **ppp;
+// 	char **ppp1;
 
-	argv++;
-	ppp = memory_allocator(argv);
-	i = 0;
-	j = 0;
-	player_list = NULL;
-	game_process = (t_game_process *)malloc(sizeof(t_game_process));
-	// printf("control_point\n");
-	parse_arguments(ppp, game_process, &player_list);
-	player_list_1 = player_list;
-	// printf("\n\n\n\n\n\n\n\n");
-	printf("Introducing contestants...\n");
-	while(player_list_1 != 0)
-	{
-		printf("* Player %d, weighing %d bytes, \"%s\" (\"%s\") !\n",
-			player_list_1->position,
-			player_list_1->player->player_header.prog_size,
-			player_list_1->player->player_header.prog_name,
-			player_list_1->player->player_header.comment);
-		player_list_1 = player_list_1->next;
-	}
-	game_process->cycle_to_die = CYCLE_TO_DIE;
-	game_process->cycle_to_die = 0;
-	virtual_machine_creator(game_process, player_list);
-	// while (*ppp)
-	// {
-	// 	printf("%s\n", *ppp);
-	// 	ppp++;
-	// }
-}
+// 	argv++;
+// 	ppp = memory_allocator(argv);
+// 	i = 0;
+// 	j = 0;
+// 	player_list = NULL;
+// 	game_process = (t_game_process *)malloc(sizeof(t_game_process));
+// 	// printf("control_point\n");
+// 	parse_arguments(ppp, game_process, &player_list);
+// 	player_list_1 = player_list;
+// 	// printf("\n\n\n\n\n\n\n\n");
+// 	printf("Introducing contestants...\n");
+// 	while(player_list_1 != 0)
+// 	{
+// 		printf("* Player %d, weighing %d bytes, \"%s\" (\"%s\") !\n",
+// 			player_list_1->position,
+// 			player_list_1->player->player_header.prog_size,
+// 			player_list_1->player->player_header.prog_name,
+// 			player_list_1->player->player_header.comment);
+// 		player_list_1 = player_list_1->next;
+// 	}
+// 	game_process->cycle_to_die = CYCLE_TO_DIE;
+// 	game_process->cycle_to_die = 0;
+// 	virtual_machine_creator(game_process, player_list);
+// 	// printf("%s\n", op_tab[11].name);
+// 	// printf("%d", pui);
+// 	// while (*ppp)
+// 	// {
+// 	// 	printf("%s\n", *ppp);
+// 	// 	ppp++;
+// 	// }
+// }
