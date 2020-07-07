@@ -6,7 +6,7 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 19:13:16 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/07/06 19:33:35 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/07 21:24:23 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,11 @@ typedef struct 			s_player
 typedef struct s_game_process
 {
 	u_int64_t	cycle_number;
-	u_int64_t	cycle_to_die;
+	int64_t		cycle_to_die;
 	u_int64_t	dump_cycle;
 	u_int64_t	number_of_live_since_last_check;
 	u_int64_t	checks_counter;
+	t_op		*op_tab;
 }				t_game_process;
 
 typedef struct s_player_process
@@ -43,7 +44,9 @@ typedef struct s_player_process
 	u_int64_t	PC;
 	u_int8_t		registers[REG_NUMBER*REG_SIZE];
 	u_int64_t	cycles_to_wait;
+	u_int64_t	live_counter;
 	struct s_player_process *next;
+	struct s_player_process *prev;
 	
 }				t_player_process;
 

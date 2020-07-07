@@ -6,7 +6,7 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/26 15:53:54 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/07/06 18:54:33 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/07 18:58:53 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,24 +112,14 @@ int check_nulls_and_code_size(int count, char *str, t_player *player, char **arg
 void set_player_name(char *str, t_player *player)
 {
 	int i;
-	int buff;
 
 	i = 0;
-	// printf("name - ");
-	// while (i < PROG_NAME_LENGTH && str[i + 4] != '\0')
-	// {
-	// 	printf("%c", str[i + 4]);
-	// 	i++;
-	// }
-	// printf("\n");
-	buff = i;
-	i = 0;
-	while (i < buff)
+	while (i < PROG_NAME_LENGTH)
 	{
 		player->player_header.prog_name[i] = str[i + 4];
 		i++;
 	}
-	player->player_header.prog_name[i] = '\0';
+	player->player_header.prog_name[PROG_NAME_LENGTH] = '\0';
 }
 
 void check_magic_header(char *str, char **argv, t_player *player)
@@ -312,6 +302,7 @@ t_player_list *player_stack_creator(t_player_list *player_list_1,
 				player_list_final->position = player_list_buff->position;
 				player_list_final->next = NULL;
 				player_list_final->prev = NULL;
+				player_list_final->player->last_live_cycle_number = 0;
 				player_list_final_begin = player_list_final;
 				player_list_2 = stack_deleter(player_list_buff, 0);
 			}
@@ -323,6 +314,7 @@ t_player_list *player_stack_creator(t_player_list *player_list_1,
 				player_list_final->player = player_list_buff->player;
 				player_list_final->position = player_list_buff->position;
 				player_list_final->next = NULL;
+				player_list_final->player->last_live_cycle_number = 0;
 				player_list_2 = stack_deleter(player_list_buff, 0);
 			}
 		}
@@ -335,6 +327,7 @@ t_player_list *player_stack_creator(t_player_list *player_list_1,
 				player_list_final->position = count;
 				player_list_final->next = NULL;
 				player_list_final->prev = NULL;
+				player_list_final->player->last_live_cycle_number = 0;
 				player_list_final_begin = player_list_final;
 				player_list_1 = stack_deleter(player_list_1, 1);
 			}
@@ -346,6 +339,7 @@ t_player_list *player_stack_creator(t_player_list *player_list_1,
 				player_list_final->player = player_list_1->player;
 				player_list_final->position = count;
 				player_list_final->next = NULL;
+				player_list_final->player->last_live_cycle_number = 0;
 				player_list_1 = stack_deleter(player_list_1, 1);
 			}
 		}

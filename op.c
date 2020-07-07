@@ -6,7 +6,7 @@
 /*   By: gtapioca <gtapioca@student.21-school.ru    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/05 19:43:05 by gtapioca          #+#    #+#             */
-/*   Updated: 2020/07/06 19:13:10 by gtapioca         ###   ########.fr       */
+/*   Updated: 2020/07/07 15:56:07 by gtapioca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,9 @@ int main(int argc, char **argv)
 		player_list_1 = player_list_1->next;
 	}
 	game_process->cycle_to_die = CYCLE_TO_DIE;
-	game_process->cycle_to_die = 0;
+	game_process->cycle_number = 0;
+	game_process->number_of_live_since_last_check = 0;
+	game_process->checks_counter = 0;
 	virtual_machine_creator(game_process, player_list, op_tab);
 	// printf("%s\n", op_tab[11].name);
 	// printf("%d", pui);
